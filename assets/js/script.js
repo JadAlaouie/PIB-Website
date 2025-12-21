@@ -1,3 +1,39 @@
+// Hero Image Slider
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.dot');
+const totalSlides = slides.length;
+
+function showSlide(index) {
+    // Remove active class from all slides and dots
+    slides.forEach(slide => slide.classList.remove('active'));
+    dots.forEach(dot => dot.classList.remove('active'));
+
+    // Add active class to current slide and dot
+    slides[index].classList.add('active');
+    dots[index].classList.add('active');
+
+    currentSlide = index;
+}
+
+function nextSlide() {
+    currentSlide = (currentSlide + 1) % totalSlides;
+    showSlide(currentSlide);
+}
+
+// Auto-play slider every 5 seconds
+const autoPlayInterval = setInterval(nextSlide, 5000);
+
+// Dot navigation
+dots.forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+        showSlide(index);
+        // Reset auto-play timer when manually clicking
+        clearInterval(autoPlayInterval);
+        setInterval(nextSlide, 5000);
+    });
+});
+
 // Navigation functionality
 const navbar = document.getElementById('navbar');
 const hamburger = document.getElementById('hamburger');
@@ -117,23 +153,133 @@ featureItems.forEach(item => {
 // Contact form handling
 const contactForm = document.getElementById('contactForm');
 
-contactForm.addEventListener('submit', (e) => {
+// Create success modal
+function showSuccessModal() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        animation: fadeIn 0.3s ease;
+    `;
+
+    modal.innerHTML = `
+        <div style="
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.4s ease;
+        ">
+            <img src="assets/images/PIB.jpg" alt="PIB Logo" style="
+                height: 80px;
+                margin-bottom: 1.5rem;
+                object-fit: contain;
+            ">
+            <div style="
+                width: 80px;
+                height: 80px;
+                background: #25D366;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 1.5rem;
+            ">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" style="width: 40px; height: 40px;">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+            </div>
+            <h2 style="
+                font-family: 'Inter', sans-serif;
+                color: #1a365d;
+                font-size: 1.8rem;
+                margin-bottom: 1rem;
+                font-weight: 700;
+            ">Message Received!</h2>
+            <p style="
+                font-family: 'Inter', sans-serif;
+                color: #718096;
+                font-size: 1.1rem;
+                line-height: 1.6;
+                margin-bottom: 2rem;
+            ">Thank you for contacting PIB. We have received your message and will get back to you soon.</p>
+            <button onclick="this.closest('div').parentElement.remove()" style="
+                padding: 1rem 2.5rem;
+                background: #DC143C;
+                color: white;
+                border: none;
+                border-radius: 50px;
+                font-size: 1.1rem;
+                font-weight: 600;
+                cursor: pointer;
+                font-family: 'Inter', sans-serif;
+                transition: all 0.3s ease;
+            " onmouseover="this.style.background='#1a365d'" onmouseout="this.style.background='#DC143C'">
+                Close
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
+
+// Initialize EmailJS
+(function() {
+    emailjs.init("I7e--GDFJqgr-3gqY");
+})();
+
+contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     // Get form values
     const formData = {
-        fullName: document.getElementById('fullName').value,
+        from_name: document.getElementById('fullName').value,
         phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value,
+        from_email: document.getElementById('email').value,
         message: document.getElementById('message').value
     };
 
-    // Here you would typically send the data to a server
-    // For now, we'll just show a success message
-    alert('Thank you for your message! We will get back to you soon.');
+    // Show loading state on button
+    const submitButton = contactForm.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    submitButton.textContent = 'Sending...';
+    submitButton.disabled = true;
 
-    // Reset form
-    contactForm.reset();
+    try {
+        // Send email using EmailJS
+        await emailjs.send('service_igb6t8e', 'template_y2na7ow', formData);
+
+        // Show success modal
+        showSuccessModal();
+
+        // Reset form
+        contactForm.reset();
+    } catch (error) {
+        console.error('Error sending email:', error);
+        alert('Sorry, there was an error sending your message. Please try again or contact us directly.');
+    } finally {
+        // Reset button state
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
+    }
 });
 
 // Add parallax effect to hero section
@@ -183,56 +329,58 @@ function animateCounter(element, target, duration = 2000) {
     }, 16);
 }
 
-// Scroll to top functionality
-let scrollToTopBtn = document.createElement('button');
-scrollToTopBtn.innerHTML = '&uarr;';
-scrollToTopBtn.setAttribute('id', 'scrollToTop');
-scrollToTopBtn.style.cssText = `
+// WhatsApp button functionality
+let whatsappBtn = document.createElement('a');
+whatsappBtn.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 28px; height: 28px;">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+    </svg>
+`;
+whatsappBtn.setAttribute('id', 'whatsappBtn');
+whatsappBtn.setAttribute('href', 'https://wa.me/15551591378?text=Hi');
+whatsappBtn.setAttribute('target', '_blank');
+whatsappBtn.setAttribute('rel', 'noopener noreferrer');
+whatsappBtn.style.cssText = `
     position: fixed;
     bottom: 30px;
     right: 30px;
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    background: #DC143C;
+    background: #25D366;
     color: white;
-    border: none;
-    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
     cursor: pointer;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
     z-index: 999;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
 `;
 
-document.body.appendChild(scrollToTopBtn);
+document.body.appendChild(whatsappBtn);
 
 window.addEventListener('scroll', () => {
     if (window.pageYOffset > 300) {
-        scrollToTopBtn.style.opacity = '1';
-        scrollToTopBtn.style.visibility = 'visible';
+        whatsappBtn.style.opacity = '1';
+        whatsappBtn.style.visibility = 'visible';
     } else {
-        scrollToTopBtn.style.opacity = '0';
-        scrollToTopBtn.style.visibility = 'hidden';
+        whatsappBtn.style.opacity = '0';
+        whatsappBtn.style.visibility = 'hidden';
     }
 });
 
-scrollToTopBtn.addEventListener('click', () => {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
-});
-
-scrollToTopBtn.addEventListener('mouseenter', function() {
-    this.style.background = '#1a365d';
+whatsappBtn.addEventListener('mouseenter', function() {
     this.style.transform = 'scale(1.1)';
+    this.style.boxShadow = '0 6px 16px rgba(37, 211, 102, 0.6)';
 });
 
-scrollToTopBtn.addEventListener('mouseleave', function() {
-    this.style.background = '#DC143C';
+whatsappBtn.addEventListener('mouseleave', function() {
     this.style.transform = 'scale(1)';
+    this.style.boxShadow = '0 4px 12px rgba(37, 211, 102, 0.4)';
 });
 
 // Add lazy loading for images
