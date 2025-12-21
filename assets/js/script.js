@@ -260,7 +260,7 @@ contactForm.addEventListener('submit', async (e) => {
     // Show loading state on button
     const submitButton = contactForm.querySelector('button[type="submit"]');
     const originalText = submitButton.textContent;
-    submitButton.textContent = 'Sending...';
+    submitButton.textContent = 'Sending...'; // Here need to make it in Arabic: جاري الإرسال...
     submitButton.disabled = true;
 
     try {
