@@ -1,3 +1,27 @@
+// Set page title based on language
+function setPageTitle() {
+    const isAr = document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
+    document.title = isAr ? 'PIB - شركاء الوسطاء الدوليين' : 'PIB - Partners International Brokers';
+}
+
+// Handle initial page load - scroll to section if hash exists
+window.addEventListener('load', () => {
+    setPageTitle();
+    const hash = window.location.hash;
+    if (hash) {
+        setTimeout(() => {
+            const section = document.querySelector(hash);
+            if (section) {
+                const offsetTop = section.offsetTop - 80;
+                window.scrollTo({
+                    top: offsetTop,
+                    behavior: 'smooth'
+                });
+            }
+        }, 100);
+    }
+});
+
 // Hero Image Slider
 let currentSlide = 0;
 const slides = document.querySelectorAll('.slide');
@@ -153,8 +177,14 @@ featureItems.forEach(item => {
 // Contact form handling
 const contactForm = document.getElementById('contactForm');
 
+// Detect if page is in Arabic
+function isArabic() {
+    return document.documentElement.lang === 'ar' || document.documentElement.dir === 'rtl';
+}
+
 // Create success modal
 function showSuccessModal() {
+    const isAr = isArabic();
     const modal = document.createElement('div');
     modal.style.cssText = `
         position: fixed;
@@ -180,6 +210,7 @@ function showSuccessModal() {
             width: 90%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             animation: slideUp 0.4s ease;
+            direction: ${isAr ? 'rtl' : 'ltr'};
         ">
             <img src="assets/images/PIB.jpg" alt="PIB Logo" style="
                 height: 80px;
@@ -201,19 +232,19 @@ function showSuccessModal() {
                 </svg>
             </div>
             <h2 style="
-                font-family: 'Inter', sans-serif;
+                font-family: ${isAr ? "'Cairo', 'Montserrat', sans-serif" : "'Inter', sans-serif"};
                 color: #1a365d;
                 font-size: 1.8rem;
                 margin-bottom: 1rem;
                 font-weight: 700;
-            ">Message Received!</h2>
+            ">${isAr ? 'تم استلام رسالتك!' : 'Message Received!'}</h2>
             <p style="
-                font-family: 'Inter', sans-serif;
+                font-family: ${isAr ? "'Cairo', 'Inter', sans-serif" : "'Inter', sans-serif"};
                 color: #718096;
                 font-size: 1.1rem;
                 line-height: 1.6;
                 margin-bottom: 2rem;
-            ">Thank you for contacting PIB. We have received your message and will get back to you soon.</p>
+            ">${isAr ? 'شكراً لتواصلك مع PIB. لقد استلمنا رسالتك وسنرد عليك قريباً.' : 'Thank you for contacting PIB. We have received your message and will get back to you soon.'}</p>
             <button onclick="this.closest('div').parentElement.remove()" style="
                 padding: 1rem 2.5rem;
                 background: #DC143C;
@@ -223,10 +254,10 @@ function showSuccessModal() {
                 font-size: 1.1rem;
                 font-weight: 600;
                 cursor: pointer;
-                font-family: 'Inter', sans-serif;
+                font-family: ${isAr ? "'Cairo', 'Inter', sans-serif" : "'Inter', sans-serif"};
                 transition: all 0.3s ease;
             " onmouseover="this.style.background='#1a365d'" onmouseout="this.style.background='#DC143C'">
-                Close
+                ${isAr ? 'إغلاق' : 'Close'}
             </button>
         </div>
     `;
@@ -258,9 +289,10 @@ contactForm.addEventListener('submit', async (e) => {
     };
 
     // Show loading state on button
+    const isAr = isArabic();
     const submitButton = contactForm.querySelector('button[type="submit"]');
     const originalText = submitButton.textContent;
-    submitButton.textContent = 'Sending...'; // Here need to make it in Arabic: جاري الإرسال...
+    submitButton.textContent = isAr ? 'جاري الإرسال...' : 'Sending...';
     submitButton.disabled = true;
 
     try {
@@ -274,7 +306,10 @@ contactForm.addEventListener('submit', async (e) => {
         contactForm.reset();
     } catch (error) {
         console.error('Error sending email:', error);
-        alert('Sorry, there was an error sending your message. Please try again or contact us directly.');
+        const errorMessage = isAr
+            ? 'عذراً، حدث خطأ أثناء إرسال رسالتك. يرجى المحاولة مرة أخرى أو التواصل معنا مباشرة.'
+            : 'Sorry, there was an error sending your message. Please try again or contact us directly.';
+        alert(errorMessage);
     } finally {
         // Reset button state
         submitButton.textContent = originalText;
@@ -330,57 +365,69 @@ function animateCounter(element, target, duration = 2000) {
 }
 
 // WhatsApp button functionality
-let whatsappBtn = document.createElement('a');
-whatsappBtn.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 28px; height: 28px;">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-    </svg>
-`;
-whatsappBtn.setAttribute('id', 'whatsappBtn');
-whatsappBtn.setAttribute('href', 'https://wa.me/15551591378?text=Hi');
-whatsappBtn.setAttribute('target', '_blank');
-whatsappBtn.setAttribute('rel', 'noopener noreferrer');
-whatsappBtn.style.cssText = `
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: #25D366;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    cursor: pointer;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    z-index: 999;
-    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
-`;
+document.addEventListener('DOMContentLoaded', function() {
+    let whatsappBtn = document.createElement('a');
+    whatsappBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 28px; height: 28px;">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        </svg>
+    `;
+    whatsappBtn.setAttribute('id', 'whatsappBtn');
+    const whatsappText = isArabic() ? 'مرحبا' : 'Hi';
+    whatsappBtn.setAttribute('href', `https://wa.me/15551591378?text=${encodeURIComponent(whatsappText)}`);
+    whatsappBtn.setAttribute('target', '_blank');
+    whatsappBtn.setAttribute('rel', 'noopener noreferrer');
+    whatsappBtn.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #25D366;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        cursor: pointer;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 999;
+        box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+    `;
 
-document.body.appendChild(whatsappBtn);
+    document.body.appendChild(whatsappBtn);
 
-window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 300) {
-        whatsappBtn.style.opacity = '1';
-        whatsappBtn.style.visibility = 'visible';
-    } else {
-        whatsappBtn.style.opacity = '0';
-        whatsappBtn.style.visibility = 'hidden';
-    }
-});
+    // Track if animation has already played
+    let whatsappAnimationPlayed = false;
 
-whatsappBtn.addEventListener('mouseenter', function() {
-    this.style.transform = 'scale(1.1)';
-    this.style.boxShadow = '0 6px 16px rgba(37, 211, 102, 0.6)';
-});
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+            whatsappBtn.style.opacity = '1';
+            whatsappBtn.style.visibility = 'visible';
 
-whatsappBtn.addEventListener('mouseleave', function() {
-    this.style.transform = 'scale(1)';
-    this.style.boxShadow = '0 4px 12px rgba(37, 211, 102, 0.4)';
+            // Play pop animation only once when first appearing
+            if (!whatsappAnimationPlayed) {
+                whatsappBtn.style.animation = 'popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55), pulse 2s infinite 0.6s';
+                whatsappAnimationPlayed = true;
+            }
+        } else {
+            whatsappBtn.style.opacity = '0';
+            whatsappBtn.style.visibility = 'hidden';
+        }
+    });
+
+    whatsappBtn.addEventListener('mouseenter', function() {
+        this.style.transform = 'scale(1.1)';
+        this.style.boxShadow = '0 6px 16px rgba(37, 211, 102, 0.6)';
+    });
+
+    whatsappBtn.addEventListener('mouseleave', function() {
+        this.style.transform = 'scale(1)';
+        this.style.boxShadow = '0 4px 12px rgba(37, 211, 102, 0.4)';
+    });
 });
 
 // Add lazy loading for images
@@ -469,16 +516,19 @@ animateOnScrollElements.forEach(el => {
 contactForm.addEventListener('submit', function(e) {
     const email = document.getElementById('email').value;
     const phone = document.getElementById('phone').value;
+    const isAr = isArabic();
 
     if (!validateEmail(email)) {
         e.preventDefault();
-        alert('Please enter a valid email address.');
+        const emailError = isAr ? 'يرجى إدخال عنوان بريد إلكتروني صالح.' : 'Please enter a valid email address.';
+        alert(emailError);
         return false;
     }
 
     if (!validatePhone(phone)) {
         e.preventDefault();
-        alert('Please enter a valid phone number.');
+        const phoneError = isAr ? 'يرجى إدخال رقم هاتف صالح.' : 'Please enter a valid phone number.';
+        alert(phoneError);
         return false;
     }
 });

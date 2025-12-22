@@ -609,10 +609,16 @@ section {
     position: absolute;
     top: 1rem;
     right: 1rem;
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: 3rem;
+    font-weight: 800;
     color: var(--light-blue);
-    opacity: 0.5;
+    opacity: 0.2;
+    line-height: 1;
+}
+
+[dir="rtl"] .service-number {
+    right: auto;
+    left: 1rem;
 }
 
 .service-icon {
@@ -746,6 +752,31 @@ section {
     color: var(--text-light);
     font-size: 1.1rem;
     font-weight: 500;
+    margin-bottom: 0.75rem;
+}
+
+.linkedin-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: #0077b5;
+    border-radius: 50%;
+    color: white;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.linkedin-link:hover {
+    background: #005582;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 119, 181, 0.4);
+}
+
+.linkedin-link svg {
+    width: 20px;
+    height: 20px;
 }
 
 /* Partners Section */
@@ -780,11 +811,18 @@ section {
     box-shadow: var(--shadow-md);
     text-align: center;
     transition: all 0.3s ease;
+    display: block;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .partner-card:hover {
     transform: translateY(-10px);
     box-shadow: var(--shadow-xl);
+}
+
+.partner-card:hover h3 {
+    color: var(--red-accent);
 }
 
 .partner-logo {
@@ -997,6 +1035,35 @@ section {
     margin-bottom: 0.5rem;
 }
 
+.social-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.social-links a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+    background: var(--red-accent);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(220, 20, 60, 0.3);
+}
+
+.social-links svg {
+    width: 20px;
+    height: 20px;
+}
+
 .footer-bottom {
     text-align: center;
     padding-top: 2rem;
@@ -1137,5 +1204,38 @@ body[dir="rtl"] .quote-text {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* WhatsApp Button Pop Animation */
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    65% {
+        transform: scale(0.85);
+    }
+    80% {
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4), 0 0 0 0 rgba(37, 211, 102, 0.7);
+    }
+    50% {
+        box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4), 0 0 0 10px rgba(37, 211, 102, 0);
+    }
+    100% {
+        box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4), 0 0 0 0 rgba(37, 211, 102, 0);
     }
 }
