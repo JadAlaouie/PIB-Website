@@ -65,7 +65,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 20px;
+    padding: 0.75rem 20px;
 }
 
 .logo {
@@ -74,7 +74,7 @@ body {
 }
 
 .logo img {
-    height: 60px;
+    height: 120px;
     width: auto;
     object-fit: contain;
     transition: transform 0.3s ease;
@@ -987,7 +987,7 @@ section {
 }
 
 .footer-logo img {
-    height: 60px;
+    height: 112px;
     width: auto;
     object-fit: contain;
     margin-bottom: 1rem;
@@ -1115,7 +1115,7 @@ body[dir="rtl"] .quote-text {
     .nav-menu {
         position: fixed;
         left: -100%;
-        top: 80px;
+        top: 136px;
         flex-direction: column;
         background: var(--white);
         width: 100%;
@@ -1142,6 +1142,11 @@ body[dir="rtl"] .quote-text {
         margin-left: 0;
     }
 
+    .logo img,
+    .footer-logo img {
+        height: 84px;
+    }
+
     .hero-title {
         font-size: 2.5rem;
     }
@@ -1164,6 +1169,10 @@ body[dir="rtl"] .quote-text {
 }
 
 @media (max-width: 768px) {
+    .nav-menu {
+        top: 120px;
+    }
+
     .hero-title {
         font-size: 2rem;
     }
